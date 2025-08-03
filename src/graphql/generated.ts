@@ -518,18 +518,32 @@ export type UsersPage = {
   meta?: Maybe<PageMetadata>;
 };
 
-export type GetPostByIdQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPostByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
 
 
-export type GetPostByIdQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id?: string | null, title?: string | null, body?: string | null } | null };
+export type GetPostByIdQuery = { __typename?: 'Query', post?: { __typename?: 'Post', id?: string | null, title?: string | null, body?: string | null, user?: { __typename?: 'User', username?: string | null, name?: string | null, phone?: string | null } | null } | null };
+
+export type GetAllPostsQueryVariables = Exact<{
+  options?: InputMaybe<PageQueryOptions>;
+}>;
+
+
+export type GetAllPostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PostsPage', data?: Array<{ __typename?: 'Post', id?: string | null, title?: string | null } | null> | null, meta?: { __typename?: 'PageMetadata', totalCount?: number | null } | null } | null };
 
 
 export const GetPostByIdDocument = gql`
-    query GetPostById {
-  post(id: 1) {
+    query GetPostById($id: ID!) {
+  post(id: $id) {
     id
     title
     body
+    user {
+      username
+      name
+      phone
+    }
   }
 }
     `;
@@ -546,10 +560,11 @@ export const GetPostByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetPostByIdQuery({
  *   variables: {
+ *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetPostByIdQuery(baseOptions?: Apollo.QueryHookOptions<GetPostByIdQuery, GetPostByIdQueryVariables>) {
+export function useGetPostByIdQuery(baseOptions: Apollo.QueryHookOptions<GetPostByIdQuery, GetPostByIdQueryVariables> & ({ variables: GetPostByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetPostByIdQuery, GetPostByIdQueryVariables>(GetPostByIdDocument, options);
       }
@@ -565,3 +580,49 @@ export type GetPostByIdQueryHookResult = ReturnType<typeof useGetPostByIdQuery>;
 export type GetPostByIdLazyQueryHookResult = ReturnType<typeof useGetPostByIdLazyQuery>;
 export type GetPostByIdSuspenseQueryHookResult = ReturnType<typeof useGetPostByIdSuspenseQuery>;
 export type GetPostByIdQueryResult = Apollo.QueryResult<GetPostByIdQuery, GetPostByIdQueryVariables>;
+export const GetAllPostsDocument = gql`
+    query GetAllPosts($options: PageQueryOptions) {
+  posts(options: $options) {
+    data {
+      id
+      title
+    }
+    meta {
+      totalCount
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllPostsQuery__
+ *
+ * To run a query within a React component, call `useGetAllPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllPostsQuery({
+ *   variables: {
+ *      options: // value for 'options'
+ *   },
+ * });
+ */
+export function useGetAllPostsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllPostsQuery, GetAllPostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllPostsQuery, GetAllPostsQueryVariables>(GetAllPostsDocument, options);
+      }
+export function useGetAllPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllPostsQuery, GetAllPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllPostsQuery, GetAllPostsQueryVariables>(GetAllPostsDocument, options);
+        }
+export function useGetAllPostsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllPostsQuery, GetAllPostsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllPostsQuery, GetAllPostsQueryVariables>(GetAllPostsDocument, options);
+        }
+export type GetAllPostsQueryHookResult = ReturnType<typeof useGetAllPostsQuery>;
+export type GetAllPostsLazyQueryHookResult = ReturnType<typeof useGetAllPostsLazyQuery>;
+export type GetAllPostsSuspenseQueryHookResult = ReturnType<typeof useGetAllPostsSuspenseQuery>;
+export type GetAllPostsQueryResult = Apollo.QueryResult<GetAllPostsQuery, GetAllPostsQueryVariables>;
