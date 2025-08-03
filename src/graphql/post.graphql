@@ -1,0 +1,24 @@
+query GetPostById($id: ID!) {
+  post(id: $id) {
+    id
+    title
+    body
+    user {
+      username
+      name
+      phone
+    }
+  }
+}
+
+query GetAllPosts($options: PageQueryOptions) {
+  posts(options: $options) {
+    data {
+      id
+      title
+    }
+    meta {
+      totalCount
+    }
+  }
+}
